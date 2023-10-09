@@ -45,7 +45,7 @@ class AstronomyShowListSerializer(AstronomyShowSerializer):
         fields = ("id", "title", "show_theme", "image")
 
 
-class MovieDetailSerializer(AstronomyShowSerializer):
+class AstronomyShowDetailSerializer(AstronomyShowSerializer):
     show_theme = ShowThemeSerializer(many=True, read_only=True)
 
     class Meta:
