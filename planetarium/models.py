@@ -16,14 +16,14 @@ class PlanetariumDome(models.Model):
     def capacity(self) -> int:
         return self.rows * self.seats_in_row
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class ShowTheme(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -44,27 +44,39 @@ class AstronomyShow(models.Model):
     class Meta:
         ordering = ["title"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.title
 
 
 class ShowSession(models.Model):
     show_time = models.DateTimeField()
-    astronomy_show = models.ForeignKey(AstronomyShow, on_delete=models.CASCADE)
-    planetarium_dome = models.ForeignKey(PlanetariumDome, on_delete=models.CASCADE)
+    astronomy_show = models.ForeignKey(
+        AstronomyShow,
+        on_delete=models.CASCADE,
+        related_name="showsessions"
+    )
+    planetarium_dome = models.ForeignKey(
+        PlanetariumDome,
+        on_delete=models.CASCADE,
+        related_name="showsessions"
+    )
 
     class Meta:
         ordering = ["-show_time"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.astronomy_show.title + " " + str(self.show_time)
 
 
 class Reservation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="reservations"
+    )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.created_at)
 
     class Meta:
@@ -73,16 +85,20 @@ class Reservation(models.Model):
 
 class Ticket(models.Model):
     show_session = models.ForeignKey(
-        ShowSession, on_delete=models.CASCADE, related_name="tickets"
+        ShowSession,
+        on_delete=models.CASCADE,
+        related_name="tickets"
     )
     reservation = models.ForeignKey(
-        Reservation, on_delete=models.CASCADE, related_name="tickets"
+        Reservation,
+        on_delete=models.CASCADE,
+        related_name="tickets"
     )
     row = models.IntegerField()
     seat = models.IntegerField()
 
     @staticmethod
-    def validate_ticket(row, seat, planetarium_dome, error_to_raise) -> str:
+    def validate_ticket(row, seat, planetarium_dome, error_to_raise):
         for ticket_attr_value, ticket_attr_name, planetarium_dome_attr_name in [
             (row, "row", "rows"),
             (seat, "seat", "seats_in_row"),
@@ -112,13 +128,13 @@ class Ticket(models.Model):
         force_update=False,
         using=None,
         update_fields=None,
-    ):
+    ) -> None:
         self.full_clean()
         return super(Ticket, self).save(
             force_insert, force_update, using, update_fields
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{str(self.show_session)} (row: {self.row}, seat: {self.seat})"
 
     class Meta:
