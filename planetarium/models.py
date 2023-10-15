@@ -27,7 +27,7 @@ class ShowTheme(models.Model):
         return self.name
 
 
-def astronomy_show_image_file_path(instance, filename):
+def astronomy_show_image_file_path(instance, filename) -> str:
     _, extension = os.path.splitext(filename)
     filename = f"{slugify(instance.title)}-{uuid.uuid4()}{extension}"
 
@@ -39,10 +39,7 @@ class AstronomyShow(models.Model):
     description = models.TextField()
     show_theme = models.ManyToManyField(ShowTheme, blank=True)
 
-    image = models.ImageField(
-        null=True,
-        upload_to=astronomy_show_image_file_path
-    )
+    image = models.ImageField(null=True, upload_to=astronomy_show_image_file_path)
 
     class Meta:
         ordering = ["title"]
@@ -53,14 +50,8 @@ class AstronomyShow(models.Model):
 
 class ShowSession(models.Model):
     show_time = models.DateTimeField()
-    astronomy_show = models.ForeignKey(
-        AstronomyShow,
-        on_delete=models.CASCADE
-    )
-    planetarium_dome = models.ForeignKey(
-        PlanetariumDome,
-        on_delete=models.CASCADE
-    )
+    astronomy_show = models.ForeignKey(AstronomyShow, on_delete=models.CASCADE)
+    planetarium_dome = models.ForeignKey(PlanetariumDome, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ["-show_time"]
@@ -71,9 +62,7 @@ class ShowSession(models.Model):
 
 class Reservation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
-    )
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.created_at)
@@ -93,7 +82,7 @@ class Ticket(models.Model):
     seat = models.IntegerField()
 
     @staticmethod
-    def validate_ticket(row, seat, planetarium_dome, error_to_raise):
+    def validate_ticket(row, seat, planetarium_dome, error_to_raise) -> str:
         for ticket_attr_value, ticket_attr_name, planetarium_dome_attr_name in [
             (row, "row", "rows"),
             (seat, "seat", "seats_in_row"),
@@ -109,7 +98,7 @@ class Ticket(models.Model):
                     }
                 )
 
-    def clean(self):
+    def clean(self) -> None:
         Ticket.validate_ticket(
             self.row,
             self.seat,
@@ -130,9 +119,7 @@ class Ticket(models.Model):
         )
 
     def __str__(self):
-        return (
-            f"{str(self.show_session)} (row: {self.row}, seat: {self.seat})"
-        )
+        return f"{str(self.show_session)} (row: {self.row}, seat: {self.seat})"
 
     class Meta:
         unique_together = ("show_session", "row", "seat")

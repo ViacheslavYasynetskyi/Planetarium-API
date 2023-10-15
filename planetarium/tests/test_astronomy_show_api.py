@@ -9,15 +9,10 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from planetarium.models import (
-    AstronomyShow,
-    ShowSession,
-    PlanetariumDome,
-    ShowTheme
-)
+from planetarium.models import AstronomyShow, ShowSession, PlanetariumDome, ShowTheme
 from planetarium.serializers import (
     AstronomyShowListSerializer,
-    AstronomyShowDetailSerializer
+    AstronomyShowDetailSerializer,
 )
 
 ASTRONOMY_SHOW_URL = reverse("planetarium:astronomyshow-list")
@@ -98,7 +93,9 @@ class AuthenticatedMovieApiTests(TestCase):
         astronomy_show1.genres.add(show_theme1)
         astronomy_show2.genres.add(show_theme2)
 
-        astronomy_show3 = sample_astronomy_show(title="Astronomy show without Show theme")
+        astronomy_show3 = sample_astronomy_show(
+            title="Astronomy show without Show theme"
+        )
 
         res = self.client.get(
             ASTRONOMY_SHOW_URL, {"genres": f"{show_theme1.id},{show_theme2.id}"}
@@ -152,9 +149,7 @@ class AdminAstronomyShowApiTests(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.user = get_user_model().objects.create_user(
-            "admin@gmail.com",
-            "testpassword",
-            is_staff=True
+            "admin@gmail.com", "testpassword", is_staff=True
         )
         self.client.force_authenticate(self.user)
 
