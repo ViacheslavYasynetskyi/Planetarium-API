@@ -10,3 +10,4 @@ flake8-variables-names==0.0.5
 pep8-naming==0.13.2
 python-dotenv==1.0.0
 psycopg2-binary==2.9.9
+black==23.9.1
