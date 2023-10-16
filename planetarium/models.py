@@ -31,7 +31,7 @@ def astronomy_show_image_file_path(instance, filename) -> str:
     _, extension = os.path.splitext(filename)
     filename = f"{slugify(instance.title)}-{uuid.uuid4()}{extension}"
 
-    return os.path.join("uploads/movies/", filename)
+    return os.path.join("uploads", "movies", filename)
 
 
 class AstronomyShow(models.Model):
@@ -65,7 +65,7 @@ class ShowSession(models.Model):
         ordering = ["-show_time"]
 
     def __str__(self) -> str:
-        return self.astronomy_show.title + " " + str(self.show_time)
+        return f"{self.astronomy_show.title} {str(self.show_time)}"
 
 
 class Reservation(models.Model):
